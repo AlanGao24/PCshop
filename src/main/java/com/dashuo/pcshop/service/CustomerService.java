@@ -3,7 +3,9 @@ package com.dashuo.pcshop.service;
 import com.dashuo.pcshop.dto.CustomerCreateRequest;
 import com.dashuo.pcshop.dto.CustomerResponse;
 import com.dashuo.pcshop.dto.CustomerUpdateRequest;
+import com.dashuo.pcshop.entity.ContactMethod;
 import com.dashuo.pcshop.entity.Customer;
+import com.dashuo.pcshop.repository.ContactMethodRepository;
 import com.dashuo.pcshop.repository.CustomerRepository;
 import org.springframework.stereotype.Service;
 
@@ -14,9 +16,14 @@ import java.util.List;
 public class CustomerService {
 
     private final CustomerRepository customerRepository;
+    private final ContactMethodRepository contactMethodRepository;
 
-    public CustomerService(CustomerRepository customerRepository) {
+    public CustomerService(
+            CustomerRepository customerRepository,
+            ContactMethodRepository contactMethodRepository
+    ) {
         this.customerRepository = customerRepository;
+        this.contactMethodRepository = contactMethodRepository;
     }
 
     public CustomerResponse create(CustomerCreateRequest request) {
@@ -88,5 +95,14 @@ public class CustomerService {
         response.setUpdatedAt(customer.getUpdatedAt());
 
         return response;
+    }
+
+    public List<CustomerResponse> searchByContact(String keyword) {
+        return contactMethodRepository.findByContactValueContaining(keyword)
+                .stream()
+                .map(ContactMethod::getCustomer)
+                .distinct()
+                .map(this::toResponse)
+                .toList();
     }
 }

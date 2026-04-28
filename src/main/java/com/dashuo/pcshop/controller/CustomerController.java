@@ -89,4 +89,17 @@ public class CustomerController {
     ) {
         return customerService.searchByName(name);
     }
+
+    @Operation(
+            summary = "根据联系方式搜索客户",
+            description = "通过手机号、微信号、邮箱或其他联系方式关键词搜索客户，用于客户再次来访时快速查找历史业务记录。"
+    )
+    @GetMapping("/search-by-contact")
+    public List<CustomerResponse> searchByContact(
+            @Parameter(description = "联系方式关键词，例如手机号、微信号、邮箱片段", example = "alan_wechat")
+            @RequestParam String keyword
+    ) {
+        return customerService.searchByContact(keyword);
+    }
+
 }
